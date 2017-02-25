@@ -73,6 +73,20 @@ class Minit_Js extends Minit_Assets {
 
 	}
 
+	function minit_item( $content, $handle, $src ) {
+
+		if ( empty( $content ) ) {
+			return $content;
+		}
+
+		if(!WP_DEBUG){
+            $content = $this->closure_compiler( $content );
+        }
+
+		return $content;
+
+	}
+
 
 	public function print_async_scripts() {
 
@@ -148,5 +162,25 @@ class Minit_Js extends Minit_Assets {
 
 	}
 
+
+
+	public function closure_compiler( $content )
+	{
+		$ch = curl_init();
+		$post = array(
+			'js_code' => $content,
+			'compilation_level' => 'SIMPLE_OPTIMIZATIONS',
+			'output_format' => 'text',
+			'output_info'=> 'compiled_code'
+		);
+		curl_setopt( $ch, CURLOPT_URL, 'http://closure-compiler.appspot.com/compile' );
+		curl_setopt( $ch, CURLOPT_POST, count( $post ) );
+		curl_setopt( $ch, CURLOPT_RETURNTRANSFER, 1 );
+		curl_setopt( $ch, CURLOPT_POSTFIELDS, http_build_query( $post ) );
+		curl_setopt( $ch, CURLOPT_TIMEOUT, 2500 );
+		$result = curl_exec( $ch );
+		curl_close($ch);
+		return $result;
+	}
 
 }

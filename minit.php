@@ -16,7 +16,6 @@ class Minit_Plugin {
 	public $revision = '20160828';
 	public $plugin_file;
 
-
 	public static function instance() {
 
 		static $instance;
@@ -49,6 +48,7 @@ class Minit_Plugin {
 			return;
 		}
 
+		include dirname( __FILE__ ) . '/vendor/autoload.php';
 		include dirname( __FILE__ ) . '/include/minit-assets.php';
 		include dirname( __FILE__ ) . '/include/minit-js.php';
 		include dirname( __FILE__ ) . '/include/minit-css.php';

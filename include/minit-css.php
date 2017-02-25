@@ -63,6 +63,33 @@ class Minit_Css extends Minit_Assets {
 			return $content;
 		}
 
+		// get wp_upload_dir
+		$wp_upload_dir = wp_upload_dir();
+
+		// test for less and sass
+		$extension = pathinfo( ABSPATH . $src, PATHINFO_EXTENSION );
+
+		if($extension == 'less'){
+			$options = array(
+				'compress'		  => false,
+				'cache_dir'		 => $wp_upload_dir['basedir'] . '/minit/var/',
+				'sourceMap'		 => true,
+				'sourceMapWriteTo'  => $wp_upload_dir['basedir'] . '/minit/var/' . basename( $src ) . '.map',
+				'sourceMapURL'	  => $wp_upload_dir['baseurl'] . '/minit/var/' . basename( $src ) . '.map',
+				'sourceMapBasepath' => ABSPATH,
+				'sourceRoot'		=> '/',
+			);
+			$parser = new Less_Parser($options);
+			$parser->parseFile( ABSPATH . $src);
+			return $parser->getCss();
+		}
+
+		if($extension == 'sass'){
+			$scss = new Leafo\ScssPhp\Compiler();
+			$scss->setLineNumberStyle(Leafo\ScssPhp\Compiler::LINE_COMMENTS);
+			return $scss->compile( file_get_contents( ABSPATH . $src ) );
+		}
+
 		// Exclude styles with media queries from being included in Minit
 		$content = $this->exclude_with_media_query( $content, $handle, $src );
 
